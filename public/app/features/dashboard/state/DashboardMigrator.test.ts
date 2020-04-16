@@ -128,7 +128,7 @@ describe('DashboardModel', () => {
     });
 
     it('dashboard schema version should be set to latest', () => {
-      expect(model.schemaVersion).toBe(21);
+      expect(model.schemaVersion).toBe(22);
     });
 
     it('graph thresholds should be migrated', () => {
@@ -175,7 +175,10 @@ describe('DashboardModel', () => {
       model.rows = [createRow({ collapse: false, height: 8 }, [[6], [6]])];
       const dashboard = new DashboardModel(model);
       const panelGridPos = getGridPositions(dashboard);
-      const expectedGrid = [{ x: 0, y: 0, w: 12, h: 8 }, { x: 12, y: 0, w: 12, h: 8 }];
+      const expectedGrid = [
+        { x: 0, y: 0, w: 12, h: 8 },
+        { x: 12, y: 0, w: 12, h: 8 },
+      ];
 
       expect(panelGridPos).toEqual(expectedGrid);
     });

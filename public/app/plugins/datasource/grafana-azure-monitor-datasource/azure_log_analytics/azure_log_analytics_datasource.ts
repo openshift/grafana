@@ -1,9 +1,9 @@
 import _ from 'lodash';
 import LogAnalyticsQuerystringBuilder from '../log_analytics/querystring_builder';
 import ResponseParser from './response_parser';
-import { AzureMonitorQuery, AzureDataSourceJsonData } from '../types';
+import { AzureMonitorQuery, AzureDataSourceJsonData, AzureLogsVariable } from '../types';
 import { DataQueryRequest, DataSourceInstanceSettings } from '@grafana/data';
-import { BackendSrv } from 'app/core/services/backend_srv';
+import { getBackendSrv } from '@grafana/runtime';
 import { TemplateSrv } from 'app/features/templating/template_srv';
 
 export default class AzureLogAnalyticsDatasource {
@@ -18,13 +18,23 @@ export default class AzureLogAnalyticsDatasource {
   /** @ngInject */
   constructor(
     private instanceSettings: DataSourceInstanceSettings<AzureDataSourceJsonData>,
-    private backendSrv: BackendSrv,
     private templateSrv: TemplateSrv
   ) {
     this.id = instanceSettings.id;
-    this.baseUrl = this.instanceSettings.jsonData.azureLogAnalyticsSameAs
-      ? '/sameasloganalyticsazure'
-      : `/loganalyticsazure`;
+
+    switch (this.instanceSettings.jsonData.cloudName) {
+      case 'govazuremonitor': // Azure US Government
+        break;
+      case 'germanyazuremonitor': // Azure Germany
+        break;
+      case 'chinaazuremonitor': // Azue China
+        this.baseUrl = '/chinaloganalyticsazure';
+        break;
+      default:
+        // Azure Global
+        this.baseUrl = '/loganalyticsazure';
+    }
+
     this.url = instanceSettings.url;
     this.defaultOrFirstWorkspace = this.instanceSettings.jsonData.logAnalyticsDefaultWorkspace;
 
@@ -46,11 +56,23 @@ export default class AzureLogAnalyticsDatasource {
       this.azureMonitorUrl = `/${azureCloud}/subscriptions`;
     } else {
       this.subscriptionId = this.instanceSettings.jsonData.logAnalyticsSubscriptionId;
-      this.azureMonitorUrl = `/workspacesloganalytics/subscriptions`;
+
+      switch (this.instanceSettings.jsonData.cloudName) {
+        case 'govazuremonitor': // Azure US Government
+          break;
+        case 'germanyazuremonitor': // Azure Germany
+          break;
+        case 'chinaazuremonitor': // Azue China
+          this.azureMonitorUrl = `/chinaworkspacesloganalytics/subscriptions`;
+          break;
+        default:
+          // Azure Global
+          this.azureMonitorUrl = `/workspacesloganalytics/subscriptions`;
+      }
     }
   }
 
-  getWorkspaces(subscription: string) {
+  getWorkspaces(subscription: string): Promise<AzureLogsVariable[]> {
     const subscriptionId = this.templateSrv.replace(subscription || this.subscriptionId);
 
     const workspaceListUrl =
@@ -89,7 +111,11 @@ export default class AzureLogAnalyticsDatasource {
       );
       const generated = querystringBuilder.generate();
 
-      const workspace = this.templateSrv.replace(item.workspace, options.scopedVars);
+      let workspace = this.templateSrv.replace(item.workspace, options.scopedVars);
+
+      if (!workspace && this.defaultOrFirstWorkspace) {
+        workspace = this.defaultOrFirstWorkspace;
+      }
 
       const url = `${this.baseUrl}/${workspace}/query?${generated.uriString}`;
 
@@ -117,6 +143,16 @@ export default class AzureLogAnalyticsDatasource {
   }
 
   metricFindQuery(query: string) {
+    const workspacesQuery = query.match(/^workspaces\(\)/i);
+    if (workspacesQuery) {
+      return this.getWorkspaces(this.subscriptionId);
+    }
+
+    const workspacesQueryWithSub = query.match(/^workspaces\(["']?([^\)]+?)["']?\)/i);
+    if (workspacesQueryWithSub) {
+      return this.getWorkspaces((workspacesQueryWithSub[1] || '').trim());
+    }
+
     return this.getDefaultOrFirstWorkspace().then((workspace: any) => {
       const queries: any[] = this.buildQuery(query, null, workspace);
 
@@ -228,8 +264,8 @@ export default class AzureLogAnalyticsDatasource {
     });
   }
 
-  doRequest(url: string, maxRetries = 1) {
-    return this.backendSrv
+  doRequest(url: string, maxRetries = 1): Promise<any> {
+    return getBackendSrv()
       .datasourceRequest({
         url: this.url + url,
         method: 'GET',

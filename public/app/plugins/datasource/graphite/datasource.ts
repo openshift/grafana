@@ -1,15 +1,22 @@
 import _ from 'lodash';
-import { DataFrame, dateMath, ScopedVars, DataQueryResponse, DataQueryRequest, toDataFrame } from '@grafana/data';
+import {
+  DataFrame,
+  dateMath,
+  ScopedVars,
+  DataQueryResponse,
+  DataQueryRequest,
+  toDataFrame,
+  DataSourceApi,
+} from '@grafana/data';
 import { isVersionGtOrEq, SemVersion } from 'app/core/utils/version';
 import gfunc from './gfunc';
-import { IQService } from 'angular';
-import { BackendSrv } from 'app/core/services/backend_srv';
+import { getBackendSrv } from '@grafana/runtime';
 import { TemplateSrv } from 'app/features/templating/template_srv';
 //Types
-import { GraphiteQuery, GraphiteType } from './types';
+import { GraphiteOptions, GraphiteQuery, GraphiteType } from './types';
 import { getSearchFilterScopedVar } from '../../../features/templating/variable';
 
-export class GraphiteDatasource {
+export class GraphiteDatasource extends DataSourceApi<GraphiteQuery, GraphiteOptions> {
   basicAuth: string;
   url: string;
   name: string;
@@ -23,12 +30,8 @@ export class GraphiteDatasource {
   _seriesRefLetters: string;
 
   /** @ngInject */
-  constructor(
-    instanceSettings: any,
-    private $q: IQService,
-    private backendSrv: BackendSrv,
-    private templateSrv: TemplateSrv
-  ) {
+  constructor(instanceSettings: any, private templateSrv: TemplateSrv) {
+    super(instanceSettings);
     this.basicAuth = instanceSettings.basicAuth;
     this.url = instanceSettings.url;
     this.name = instanceSettings.name;
@@ -67,7 +70,7 @@ export class GraphiteDatasource {
 
     const params = this.buildGraphiteParams(graphOptions, options.scopedVars);
     if (params.length === 0) {
-      return this.$q.when({ data: [] });
+      return Promise.resolve({ data: [] });
     }
 
     if (this.isMetricTank) {
@@ -100,7 +103,7 @@ export class GraphiteDatasource {
     }
   }
 
-  convertResponseToDataFrames(result: any): DataQueryResponse {
+  convertResponseToDataFrames = (result: any): DataQueryResponse => {
     const data: DataFrame[] = [];
     if (!result || !result.data) {
       return { data };
@@ -121,14 +124,16 @@ export class GraphiteDatasource {
       // Metrictank metadata
       if (s.meta) {
         frame.meta = {
-          metrictank: s.meta, // array of metadata
-          metrictankReq: result.data.meta, // info on the request
+          custom: {
+            request: result.data.meta, // info for the whole request
+            info: s.meta, // Array of metadata
+          },
         };
       }
       data.push(frame);
     }
     return { data };
-  }
+  };
 
   parseTags(tagString: string) {
     let tags: string[] = [];
@@ -142,14 +147,14 @@ export class GraphiteDatasource {
     return tags;
   }
 
-  interpolateVariablesInQueries(queries: GraphiteQuery[]): GraphiteQuery[] {
+  interpolateVariablesInQueries(queries: GraphiteQuery[], scopedVars: ScopedVars): GraphiteQuery[] {
     let expandedQueries = queries;
     if (queries && queries.length > 0) {
       expandedQueries = queries.map(query => {
         const expandedQuery = {
           ...query,
           datasource: this.name,
-          target: this.templateSrv.replace(query.target),
+          target: this.templateSrv.replace(query.target, scopedVars),
         };
         return expandedQuery;
       });
@@ -157,7 +162,7 @@ export class GraphiteDatasource {
     return expandedQueries;
   }
 
-  annotationQuery(options: { annotation: { target: string; tags: string }; rangeRaw: any }) {
+  annotationQuery(options: any) {
     // Graphite metric as annotation
     if (options.annotation.target) {
       const target = this.templateSrv.replace(options.annotation.target, {}, 'glob');
@@ -235,11 +240,11 @@ export class GraphiteDatasource {
           tags,
       });
     } catch (err) {
-      return this.$q.reject(err);
+      return Promise.reject(err);
     }
   }
 
-  targetContainsTemplate(target: { target: any }) {
+  targetContainsTemplate(target: GraphiteQuery) {
     return this.templateSrv.variableExists(target.target);
   }
 
@@ -368,12 +373,10 @@ export class GraphiteDatasource {
     });
   }
 
-  getTagValues(tag: string, optionalOptions: any) {
-    const options = optionalOptions || {};
-
+  getTagValues(options: any = {}) {
     const httpOptions: any = {
       method: 'GET',
-      url: '/tags/' + this.templateSrv.replace(tag),
+      url: '/tags/' + this.templateSrv.replace(options.key),
       // for cancellations
       requestId: options.requestId,
     };
@@ -567,7 +570,7 @@ export class GraphiteDatasource {
     options.url = this.url + options.url;
     options.inspect = { type: 'graphite' };
 
-    return this.backendSrv.datasourceRequest(options);
+    return getBackendSrv().datasourceRequest(options);
   }
 
   buildGraphiteParams(options: any, scopedVars: ScopedVars): string[] {

@@ -3,7 +3,10 @@ import { EventsWithValidation, FormField, FormLabel, Input, regexValidation, Sel
 import { DataSourceSettings, SelectableValue } from '@grafana/data';
 import { PromOptions } from '../types';
 
-const httpOptions = [{ value: 'GET', label: 'GET' }, { value: 'POST', label: 'POST' }];
+const httpOptions = [
+  { value: 'GET', label: 'GET' },
+  { value: 'POST', label: 'POST' },
+];
 
 type Props = {
   value: DataSourceSettings<PromOptions>;
@@ -31,8 +34,7 @@ export const PromSettings = (props: Props) => {
                   validationEvents={promSettingsValidationEvents}
                 />
               }
-              tooltip="Set this to your global scrape interval defined in your Prometheus config file. This will be used as a lower limit for the
-        Prometheus step query parameter."
+              tooltip="Set this to the typical scrape and evaluation interval configured in Prometheus. Defaults to 15s."
             />
           </div>
         </div>

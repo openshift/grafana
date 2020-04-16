@@ -5,7 +5,7 @@ import { QueryCtrl } from 'app/plugins/sdk';
 import { SqlPart } from 'app/core/components/sql_part/sql_part';
 import PostgresQuery from './postgres_query';
 import sqlPart from './sql_part';
-import { auto, IQService } from 'angular';
+import { auto } from 'angular';
 import { TemplateSrv } from 'app/features/templating/template_srv';
 import { CoreEvents } from 'app/types';
 import { PanelEvents } from '@grafana/data';
@@ -48,7 +48,6 @@ export class PostgresQueryCtrl extends QueryCtrl {
     $scope: any,
     $injector: auto.IInjectorService,
     private templateSrv: TemplateSrv,
-    private $q: IQService,
     private uiSegmentSrv: any
   ) {
     super($scope, $injector);
@@ -57,7 +56,10 @@ export class PostgresQueryCtrl extends QueryCtrl {
     this.metaBuilder = new PostgresMetaQuery(this.target, this.queryModel);
     this.updateProjection();
 
-    this.formats = [{ text: 'Time series', value: 'time_series' }, { text: 'Table', value: 'table' }];
+    this.formats = [
+      { text: 'Time series', value: 'time_series' },
+      { text: 'Table', value: 'table' },
+    ];
 
     if (!this.target.rawSql) {
       // special handling when in table panel
@@ -253,7 +255,7 @@ export class PostgresQueryCtrl extends QueryCtrl {
       }
     });
 
-    this.$q.all([task1, task2]).then(() => {
+    Promise.all([task1, task2]).then(() => {
       this.updateRawSqlAndRefresh();
     });
   }
@@ -486,7 +488,7 @@ export class PostgresQueryCtrl extends QueryCtrl {
         break;
       }
       case 'get-part-actions': {
-        return this.$q.when([{ text: 'Remove', value: 'remove-part' }]);
+        return Promise.resolve([{ text: 'Remove', value: 'remove-part' }]);
       }
     }
   }
@@ -510,7 +512,7 @@ export class PostgresQueryCtrl extends QueryCtrl {
         break;
       }
       case 'get-part-actions': {
-        return this.$q.when([{ text: 'Remove', value: 'remove-part' }]);
+        return Promise.resolve([{ text: 'Remove', value: 'remove-part' }]);
       }
     }
   }
@@ -573,7 +575,7 @@ export class PostgresQueryCtrl extends QueryCtrl {
           case 'right':
             if (['int4', 'int8', 'float4', 'float8', 'timestamp', 'timestamptz'].indexOf(part.datatype) > -1) {
               // don't do value lookups for numerical fields
-              return this.$q.when([]);
+              return Promise.resolve([]);
             } else {
               return this.datasource
                 .metricFindQuery(this.metaBuilder.buildValueQuery(part.params[0]))
@@ -588,9 +590,9 @@ export class PostgresQueryCtrl extends QueryCtrl {
                 .catch(this.handleQueryError.bind(this));
             }
           case 'op':
-            return this.$q.when(this.uiSegmentSrv.newOperators(this.metaBuilder.getOperators(part.datatype)));
+            return Promise.resolve(this.uiSegmentSrv.newOperators(this.metaBuilder.getOperators(part.datatype)));
           default:
-            return this.$q.when([]);
+            return Promise.resolve([]);
         }
       }
       case 'part-param-changed': {
@@ -611,7 +613,7 @@ export class PostgresQueryCtrl extends QueryCtrl {
         break;
       }
       case 'get-part-actions': {
-        return this.$q.when([{ text: 'Remove', value: 'remove-part' }]);
+        return Promise.resolve([{ text: 'Remove', value: 'remove-part' }]);
       }
     }
   }
@@ -624,7 +626,7 @@ export class PostgresQueryCtrl extends QueryCtrl {
       options.push(this.uiSegmentSrv.newSegment({ type: 'macro', value: '$__timeFilter' }));
     }
     options.push(this.uiSegmentSrv.newSegment({ type: 'expression', value: 'Expression' }));
-    return this.$q.when(options);
+    return Promise.resolve(options);
   }
 
   addWhereAction(part: any, index: any) {

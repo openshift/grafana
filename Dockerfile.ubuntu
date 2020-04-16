@@ -1,4 +1,4 @@
-FROM golang:1.13.1 AS go-builder
+FROM golang:1.13.4 AS go-builder
 
 WORKDIR /src/grafana
 
@@ -12,7 +12,7 @@ COPY pkg pkg/
 
 RUN go run build.go build
 
-FROM node:10.17 AS js-builder
+FROM node:12.13 AS js-builder
 
 # PhantomJS
 RUN apt-get update && apt-get install -y curl &&\
@@ -26,15 +26,15 @@ COPY packages packages
 
 RUN yarn install --pure-lockfile
 
-COPY Gruntfile.js tsconfig.json tslint.json .browserslistrc ./
-COPY public public 
+COPY Gruntfile.js tsconfig.json .eslintrc .editorconfig .browserslistrc ./
+COPY public public
 COPY scripts scripts
 COPY emails emails
 
 ENV NODE_ENV production
 RUN ./node_modules/.bin/grunt build
 
-FROM ubuntu:18.10
+FROM ubuntu:19.10
 
 LABEL maintainer="Grafana team <hello@grafana.com>"
 EXPOSE 3000

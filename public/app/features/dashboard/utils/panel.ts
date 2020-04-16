@@ -20,6 +20,8 @@ import templateSrv from 'app/features/templating/template_srv';
 import { LS_PANEL_COPY_KEY, PANEL_BORDER } from 'app/core/constants';
 import { CoreEvents } from 'app/types';
 
+import { ShareModal } from 'app/features/dashboard/components/ShareModal';
+
 export const removePanel = (dashboard: DashboardModel, panel: PanelModel, ask: boolean) => {
   // confirm deletion
   if (ask !== false) {
@@ -82,9 +84,9 @@ export const editPanelJson = (dashboard: DashboardModel, panel: PanelModel) => {
 };
 
 export const sharePanel = (dashboard: DashboardModel, panel: PanelModel) => {
-  appEvents.emit(CoreEvents.showModal, {
-    src: 'public/app/features/dashboard/components/ShareModal/template.html',
-    model: {
+  appEvents.emit(CoreEvents.showModalReact, {
+    component: ShareModal,
+    props: {
       dashboard: dashboard,
       panel: panel,
     },
@@ -173,10 +175,7 @@ export function getResolution(panel: PanelModel): number {
 }
 
 export function calculateInnerPanelHeight(panel: PanelModel, containerHeight: number): number {
-  return (
-    containerHeight -
-    (panel.hasTitle() ? config.theme.panelHeaderHeight : 0) -
-    config.theme.panelPadding * 2 -
-    PANEL_BORDER
-  );
+  const chromePadding = panel.plugin && panel.plugin.noPadding ? 0 : config.theme.panelPadding * 2;
+  const headerHeight = panel.hasTitle() ? config.theme.panelHeaderHeight : 0;
+  return containerHeight - headerHeight - chromePadding - PANEL_BORDER;
 }
