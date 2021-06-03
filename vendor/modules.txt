@@ -395,7 +395,7 @@ github.com/klauspost/compress/flate
 github.com/klauspost/compress/gzip
 # github.com/konsorten/go-windows-terminal-sequences v1.0.3
 github.com/konsorten/go-windows-terminal-sequences
-# github.com/lib/pq v1.9.0
+# github.com/lib/pq v1.10.2
 ## explicit
 github.com/lib/pq
 github.com/lib/pq/oid
