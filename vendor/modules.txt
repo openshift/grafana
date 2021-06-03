@@ -1,4 +1,4 @@
-# cloud.google.com/go v0.75.0
+# cloud.google.com/go v0.79.0
 cloud.google.com/go
 cloud.google.com/go/compute/metadata
 cloud.google.com/go/iam
@@ -33,7 +33,7 @@ github.com/apache/arrow/go/arrow/ipc
 github.com/apache/arrow/go/arrow/memory
 # github.com/apache/thrift v0.13.0
 github.com/apache/thrift/lib/go/thrift
-# github.com/aws/aws-sdk-go v1.37.20
+# github.com/aws/aws-sdk-go v1.38.3
 ## explicit
 github.com/aws/aws-sdk-go/aws
 github.com/aws/aws-sdk-go/aws/arn
@@ -128,8 +128,6 @@ github.com/centrifugal/centrifuge/internal/recovery
 github.com/centrifugal/centrifuge/internal/timers
 # github.com/centrifugal/protocol v0.3.4
 github.com/centrifugal/protocol
-# github.com/cespare/xxhash v1.1.0
-github.com/cespare/xxhash
 # github.com/cespare/xxhash/v2 v2.1.1
 github.com/cespare/xxhash/v2
 # github.com/cheekybits/genny v1.0.0
@@ -229,6 +227,7 @@ github.com/gobwas/glob/syntax/lexer
 github.com/gobwas/glob/util/runes
 github.com/gobwas/glob/util/strings
 # github.com/gogo/googleapis v1.3.0
+## explicit
 github.com/gogo/googleapis/google/rpc
 # github.com/gogo/protobuf v1.3.2
 github.com/gogo/protobuf/gogoproto
@@ -246,7 +245,7 @@ github.com/golang/groupcache/lru
 # github.com/golang/mock v1.5.0
 ## explicit
 github.com/golang/mock/gomock
-# github.com/golang/protobuf v1.4.3
+# github.com/golang/protobuf v1.5.2
 ## explicit
 github.com/golang/protobuf/descriptor
 github.com/golang/protobuf/internal/gengogrpc
@@ -260,14 +259,14 @@ github.com/golang/protobuf/ptypes/duration
 github.com/golang/protobuf/ptypes/empty
 github.com/golang/protobuf/ptypes/timestamp
 github.com/golang/protobuf/ptypes/wrappers
-# github.com/golang/snappy v0.0.2
+# github.com/golang/snappy v0.0.3
 github.com/golang/snappy
 # github.com/gomodule/redigo v2.0.0+incompatible
 github.com/gomodule/redigo/internal
 github.com/gomodule/redigo/redis
 # github.com/google/flatbuffers v1.11.0
 github.com/google/flatbuffers/go
-# github.com/google/go-cmp v0.5.4
+# github.com/google/go-cmp v0.5.5
 ## explicit
 github.com/google/go-cmp/cmp
 github.com/google/go-cmp/cmp/cmpopts
@@ -390,7 +389,7 @@ github.com/jtolds/gls
 # github.com/jung-kurt/gofpdf v1.16.2
 ## explicit
 github.com/jung-kurt/gofpdf
-# github.com/klauspost/compress v1.11.7
+# github.com/klauspost/compress v1.12.2
 github.com/klauspost/compress/flate
 github.com/klauspost/compress/gzip
 # github.com/konsorten/go-windows-terminal-sequences v1.0.3
@@ -456,7 +455,7 @@ github.com/patrickmn/go-cache
 github.com/pkg/errors
 # github.com/pmezard/go-difflib v1.0.0
 github.com/pmezard/go-difflib/difflib
-# github.com/prometheus/client_golang v1.9.0
+# github.com/prometheus/client_golang v1.10.0
 ## explicit
 github.com/prometheus/client_golang/api
 github.com/prometheus/client_golang/api/prometheus/v1
@@ -467,7 +466,7 @@ github.com/prometheus/client_golang/prometheus/promhttp
 # github.com/prometheus/client_model v0.2.0
 ## explicit
 github.com/prometheus/client_model/go
-# github.com/prometheus/common v0.18.0
+# github.com/prometheus/common v0.24.0
 ## explicit
 github.com/prometheus/common/config
 github.com/prometheus/common/expfmt
@@ -476,11 +475,11 @@ github.com/prometheus/common/model
 github.com/prometheus/common/version
 # github.com/prometheus/node_exporter v1.0.0-rc.0.0.20200428091818-01054558c289
 github.com/prometheus/node_exporter/https
-# github.com/prometheus/procfs v0.2.0
+# github.com/prometheus/procfs v0.6.0
 github.com/prometheus/procfs
 github.com/prometheus/procfs/internal/fs
 github.com/prometheus/procfs/internal/util
-# github.com/prometheus/prometheus v1.8.2-0.20201105135750-00f16d1ac3a4
+# github.com/prometheus/prometheus v1.8.2-0.20210430082741-2a4b8e12bbf2
 github.com/prometheus/prometheus/pkg/exemplar
 github.com/prometheus/prometheus/pkg/labels
 github.com/prometheus/prometheus/pkg/textparse
@@ -575,7 +574,7 @@ github.com/uber/jaeger-client-go/thrift-gen/zipkincore
 github.com/uber/jaeger-client-go/transport
 github.com/uber/jaeger-client-go/utils
 github.com/uber/jaeger-client-go/zipkin
-# github.com/uber/jaeger-lib v2.4.0+incompatible
+# github.com/uber/jaeger-lib v2.4.1+incompatible
 github.com/uber/jaeger-lib/metrics
 # github.com/unknwon/com v1.0.1
 ## explicit
@@ -606,7 +605,7 @@ github.com/yudai/gojsondiff
 github.com/yudai/gojsondiff/formatter
 # github.com/yudai/golcs v0.0.0-20170316035057-ecda9a501e82
 github.com/yudai/golcs
-# go.opencensus.io v0.22.6
+# go.opencensus.io v0.23.0
 go.opencensus.io
 go.opencensus.io/internal
 go.opencensus.io/internal/tagencoding
@@ -623,7 +622,7 @@ go.opencensus.io/trace
 go.opencensus.io/trace/internal
 go.opencensus.io/trace/propagation
 go.opencensus.io/trace/tracestate
-# go.opentelemetry.io/collector v0.21.0
+# go.opentelemetry.io/collector v0.27.0
 ## explicit
 go.opentelemetry.io/collector/consumer/pdata
 go.opentelemetry.io/collector/internal
@@ -636,6 +635,7 @@ go.opentelemetry.io/collector/internal/data/protogen/logs/v1
 go.opentelemetry.io/collector/internal/data/protogen/metrics/v1
 go.opentelemetry.io/collector/internal/data/protogen/resource/v1
 go.opentelemetry.io/collector/internal/data/protogen/trace/v1
+go.opentelemetry.io/collector/internal/occonventions
 go.opentelemetry.io/collector/translator/conventions
 go.opentelemetry.io/collector/translator/trace
 go.opentelemetry.io/collector/translator/trace/jaeger
@@ -644,7 +644,7 @@ go.uber.org/atomic
 # go.uber.org/goleak v1.1.10
 go.uber.org/goleak
 go.uber.org/goleak/internal/stack
-# golang.org/x/crypto v0.0.0-20201221181555-eec23a3978ad
+# golang.org/x/crypto v0.0.0-20210421170649-83a5a9bb288b
 ## explicit
 golang.org/x/crypto/cast5
 golang.org/x/crypto/ed25519
@@ -665,7 +665,7 @@ golang.org/x/lint/golint
 # golang.org/x/mod v0.4.1
 golang.org/x/mod/module
 golang.org/x/mod/semver
-# golang.org/x/net v0.0.0-20210119194325-5f4716e94777
+# golang.org/x/net v0.0.0-20210427231257-85d9c07bbe3a
 ## explicit
 golang.org/x/net/context
 golang.org/x/net/context/ctxhttp
@@ -677,28 +677,29 @@ golang.org/x/net/internal/timeseries
 golang.org/x/net/netutil
 golang.org/x/net/publicsuffix
 golang.org/x/net/trace
-# golang.org/x/oauth2 v0.0.0-20210113205817-d3ed898aa8a3
+# golang.org/x/oauth2 v0.0.0-20210323180902-22b0adad7558
 ## explicit
 golang.org/x/oauth2
+golang.org/x/oauth2/clientcredentials
 golang.org/x/oauth2/google
 golang.org/x/oauth2/google/internal/externalaccount
 golang.org/x/oauth2/internal
 golang.org/x/oauth2/jws
 golang.org/x/oauth2/jwt
-# golang.org/x/sync v0.0.0-20201207232520-09787c993a3a
+# golang.org/x/sync v0.0.0-20210220032951-036812b2e83c
 ## explicit
 golang.org/x/sync/errgroup
-# golang.org/x/sys v0.0.0-20210124154548-22da62e12c0c
+# golang.org/x/sys v0.0.0-20210423082822-04245dca01da
 golang.org/x/sys/execabs
 golang.org/x/sys/internal/unsafeheader
 golang.org/x/sys/unix
 golang.org/x/sys/windows
-# golang.org/x/text v0.3.5
+# golang.org/x/text v0.3.6
 golang.org/x/text/secure/bidirule
 golang.org/x/text/transform
 golang.org/x/text/unicode/bidi
 golang.org/x/text/unicode/norm
-# golang.org/x/time v0.0.0-20200630173020-3af7569d3a1e
+# golang.org/x/time v0.0.0-20210220033141-f8bda1e9f3ba
 ## explicit
 golang.org/x/time/rate
 # golang.org/x/tools v0.1.0
@@ -744,7 +745,7 @@ gonum.org/v1/gonum/lapack
 gonum.org/v1/gonum/lapack/gonum
 gonum.org/v1/gonum/lapack/lapack64
 gonum.org/v1/gonum/mat
-# google.golang.org/api v0.40.0
+# google.golang.org/api v0.42.0
 ## explicit
 google.golang.org/api/googleapi
 google.golang.org/api/googleapi/transport
@@ -771,7 +772,7 @@ google.golang.org/appengine/internal/modules
 google.golang.org/appengine/internal/remote_api
 google.golang.org/appengine/internal/urlfetch
 google.golang.org/appengine/urlfetch
-# google.golang.org/genproto v0.0.0-20210203152818-3206188e46ba
+# google.golang.org/genproto v0.0.0-20210312152112-fc591d9ea70f
 google.golang.org/genproto/googleapis/api/annotations
 google.golang.org/genproto/googleapis/api/httpbody
 google.golang.org/genproto/googleapis/iam/v1
@@ -779,7 +780,7 @@ google.golang.org/genproto/googleapis/rpc/code
 google.golang.org/genproto/googleapis/rpc/status
 google.golang.org/genproto/googleapis/type/expr
 google.golang.org/genproto/protobuf/field_mask
-# google.golang.org/grpc v1.36.0
+# google.golang.org/grpc v1.37.1
 ## explicit
 google.golang.org/grpc
 google.golang.org/grpc/attributes
@@ -830,7 +831,7 @@ google.golang.org/grpc/serviceconfig
 google.golang.org/grpc/stats
 google.golang.org/grpc/status
 google.golang.org/grpc/tap
-# google.golang.org/protobuf v1.25.0
+# google.golang.org/protobuf v1.26.0
 google.golang.org/protobuf/cmd/protoc-gen-go/internal_gengo
 google.golang.org/protobuf/compiler/protogen
 google.golang.org/protobuf/encoding/protojson
@@ -845,13 +846,12 @@ google.golang.org/protobuf/internal/encoding/messageset
 google.golang.org/protobuf/internal/encoding/tag
 google.golang.org/protobuf/internal/encoding/text
 google.golang.org/protobuf/internal/errors
-google.golang.org/protobuf/internal/fieldsort
 google.golang.org/protobuf/internal/filedesc
 google.golang.org/protobuf/internal/filetype
 google.golang.org/protobuf/internal/flags
 google.golang.org/protobuf/internal/genid
 google.golang.org/protobuf/internal/impl
-google.golang.org/protobuf/internal/mapsort
+google.golang.org/protobuf/internal/order
 google.golang.org/protobuf/internal/pragma
 google.golang.org/protobuf/internal/set
 google.golang.org/protobuf/internal/strs

@@ -116,11 +116,12 @@ func appendTagsFromResourceAttributes(dest []model.KeyValue, attrs pdata.Attribu
 		return dest
 	}
 
-	attrs.ForEach(func(key string, attr pdata.AttributeValue) {
+	attrs.Range(func(key string, attr pdata.AttributeValue) bool {
 		if key == conventions.AttributeServiceName {
-			return
+			return true
 		}
 		dest = append(dest, attributeToJaegerProtoTag(key, attr))
+		return true
 	})
 	return dest
 }
@@ -129,8 +130,9 @@ func appendTagsFromAttributes(dest []model.KeyValue, attrs pdata.AttributeMap) [
 	if attrs.Len() == 0 {
 		return dest
 	}
-	attrs.ForEach(func(key string, attr pdata.AttributeValue) {
+	attrs.Range(func(key string, attr pdata.AttributeValue) bool {
 		dest = append(dest, attributeToJaegerProtoTag(key, attr))
+		return true
 	})
 	return dest
 }
@@ -138,23 +140,23 @@ func appendTagsFromAttributes(dest []model.KeyValue, attrs pdata.AttributeMap) [
 func attributeToJaegerProtoTag(key string, attr pdata.AttributeValue) model.KeyValue {
 	tag := model.KeyValue{Key: key}
 	switch attr.Type() {
-	case pdata.AttributeValueSTRING:
+	case pdata.AttributeValueTypeString:
 		// Jaeger-to-Internal maps binary tags to string attributes and encodes them as
 		// base64 strings. Blindingly attempting to decode base64 seems too much.
 		tag.VType = model.ValueType_STRING
 		tag.VStr = attr.StringVal()
-	case pdata.AttributeValueINT:
+	case pdata.AttributeValueTypeInt:
 		tag.VType = model.ValueType_INT64
 		tag.VInt64 = attr.IntVal()
-	case pdata.AttributeValueBOOL:
+	case pdata.AttributeValueTypeBool:
 		tag.VType = model.ValueType_BOOL
 		tag.VBool = attr.BoolVal()
-	case pdata.AttributeValueDOUBLE:
+	case pdata.AttributeValueTypeDouble:
 		tag.VType = model.ValueType_FLOAT64
 		tag.VFloat64 = attr.DoubleVal()
-	case pdata.AttributeValueMAP, pdata.AttributeValueARRAY:
+	case pdata.AttributeValueTypeMap, pdata.AttributeValueTypeArray:
 		tag.VType = model.ValueType_STRING
-		tag.VStr = tracetranslator.AttributeValueToString(attr, false)
+		tag.VStr = tracetranslator.AttributeValueToString(attr)
 	}
 	return tag
 }
@@ -175,7 +177,7 @@ func spanToJaegerProto(span pdata.Span, libraryTags pdata.InstrumentationLibrary
 		return nil, fmt.Errorf("error converting span links to Jaeger references: %w", err)
 	}
 
-	startTime := pdata.UnixNanoToTime(span.StartTime())
+	startTime := span.StartTimestamp().AsTime()
 
 	return &model.Span{
 		TraceID:       traceID,
@@ -183,7 +185,7 @@ func spanToJaegerProto(span pdata.Span, libraryTags pdata.InstrumentationLibrary
 		OperationName: span.Name(),
 		References:    jReferences,
 		StartTime:     startTime,
-		Duration:      pdata.UnixNanoToTime(span.EndTime()).Sub(startTime),
+		Duration:      span.EndTimestamp().AsTime().Sub(startTime),
 		Tags:          getJaegerProtoSpanTags(span, libraryTags),
 		Logs:          spanEventsToJaegerProtoLogs(span.Events()),
 	}, nil
@@ -345,7 +347,7 @@ func spanEventsToJaegerProtoLogs(events pdata.SpanEventSlice) []model.Log {
 		}
 		fields = appendTagsFromAttributes(fields, event.Attributes())
 		logs = append(logs, model.Log{
-			Timestamp: pdata.UnixNanoToTime(event.Timestamp()),
+			Timestamp: event.Timestamp().AsTime(),
 			Fields:    fields,
 		})
 	}
@@ -356,15 +358,15 @@ func spanEventsToJaegerProtoLogs(events pdata.SpanEventSlice) []model.Log {
 func getTagFromSpanKind(spanKind pdata.SpanKind) (model.KeyValue, bool) {
 	var tagStr string
 	switch spanKind {
-	case pdata.SpanKindCLIENT:
+	case pdata.SpanKindClient:
 		tagStr = string(tracetranslator.OpenTracingSpanKindClient)
-	case pdata.SpanKindSERVER:
+	case pdata.SpanKindServer:
 		tagStr = string(tracetranslator.OpenTracingSpanKindServer)
-	case pdata.SpanKindPRODUCER:
+	case pdata.SpanKindProducer:
 		tagStr = string(tracetranslator.OpenTracingSpanKindProducer)
-	case pdata.SpanKindCONSUMER:
+	case pdata.SpanKindConsumer:
 		tagStr = string(tracetranslator.OpenTracingSpanKindConsumer)
-	case pdata.SpanKindINTERNAL:
+	case pdata.SpanKindInternal:
 		tagStr = string(tracetranslator.OpenTracingSpanKindInternal)
 	default:
 		return model.KeyValue{}, false
@@ -427,7 +429,7 @@ func getTagsFromInstrumentationLibrary(il pdata.InstrumentationLibrary) ([]model
 	keyValues := make([]model.KeyValue, 0)
 	if ilName := il.Name(); ilName != "" {
 		kv := model.KeyValue{
-			Key:   tracetranslator.TagInstrumentationName,
+			Key:   conventions.InstrumentationLibraryName,
 			VStr:  ilName,
 			VType: model.ValueType_STRING,
 		}
@@ -435,7 +437,7 @@ func getTagsFromInstrumentationLibrary(il pdata.InstrumentationLibrary) ([]model
 	}
 	if ilVersion := il.Version(); ilVersion != "" {
 		kv := model.KeyValue{
-			Key:   tracetranslator.TagInstrumentationVersion,
+			Key:   conventions.InstrumentationLibraryVersion,
 			VStr:  ilVersion,
 			VType: model.ValueType_STRING,
 		}
