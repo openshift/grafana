@@ -554,7 +554,7 @@ github.com/timberio/go-datemath
 # github.com/ua-parser/uap-go v0.0.0-20190826212731-daf92ba38329
 ## explicit
 github.com/ua-parser/uap-go/uaparser
-# github.com/uber/jaeger-client-go v2.25.0+incompatible
+# github.com/uber/jaeger-client-go v2.29.1+incompatible
 ## explicit
 github.com/uber/jaeger-client-go
 github.com/uber/jaeger-client-go/config
